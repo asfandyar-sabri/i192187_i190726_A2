@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 import pickle
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
 import dash
 from dash import dcc
@@ -20,7 +20,7 @@ with open('model.pkl', 'rb') as f:
 dashboard_app = dash.Dash(__name__, server=app, url_base_pathname='/dashboard/')
 
 dashboard_app.layout = html.Div([
-    html.H1('Stock Price Prediction'),
+    html.H1('Prediction of Stock Prices'),
     html.Div([
         html.Div([
             dcc.Graph(id='stock-chart')
@@ -67,7 +67,7 @@ def update_graph_live(n):
     data_df = pd.concat([data_df, point])
 
     features = ["Open", "High", "Low", "Volume"]
-    scaler = MinMaxScaler()
+    scaler = StandardScaler()
     data_transform = scaler.fit_transform(data_df[features])
     data_transform = pd.DataFrame(
         columns=features, data=data_transform, index=data_df.index)
@@ -96,7 +96,7 @@ def update_graph_live(n):
 
 @app.route('/', methods=['GET'])
 def home():
-    return "<h1>Stock Prediction API</h1><p>This API predicts stock prices based on input data.</p>"
+    return "<h1>Stock Price Prediction</h1><p>This API is used to predicts stock prices based on input data.</p>"
 
 
 @app.route('/predict', methods=['POST'])
@@ -108,7 +108,7 @@ def predict():
                            data['Close']], "Adj Close": [data['Adj Close']], "Volume": [data['Volume']]})
 
     features = ["Open", "High", "Low", "Volume"]
-    scaler = MinMaxScaler()
+    scaler = StandardScaler
     data_transform = scaler.fit_transform(data_df[features])
     data_transform = pd.DataFrame(
         columns=features, data=data_transform, index=data_df.index)
@@ -123,7 +123,6 @@ def predict():
 
     return jsonify(output)
 
-
-if __name__ == '_main_':
+if __name__ == '__main__':
 
     app.run(host='localhost', port=5004, debug=True)

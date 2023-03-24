@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 import pickle
@@ -13,8 +13,8 @@ if __name__ == '__main__':
 
     data = pd.DataFrame(columns=['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume'])
 
-    for symbol in symbols:
-        data = data.append(yf.download(symbol, interval='1m', period='1wk', ignore_tz=True))
+    for sym in symbols:
+        data = data.append(yf.download(sym, interval='1m', period='1wk', ignore_tz=True))
     
     data.index = pd.to_datetime(data.index)
     data.index = data.index.tz_localize(None)
@@ -23,11 +23,11 @@ if __name__ == '__main__':
     features = ["Open", "High", "Low", "Volume"]
     target = "Adj Close"
 
-    scaler = MinMaxScaler()
-    feature_transform = scaler.fit_transform(data[features])
-    feature_transform= pd.DataFrame(columns=features, data=feature_transform, index=data.index)
+    scaler = StandardScaler()
+    transform = scaler.fit_transform(data[features])
+    transform= pd.DataFrame(columns=features, data=transform, index=data.index)
     
-    X = feature_transform
+    X = transform
     y = data[target]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
